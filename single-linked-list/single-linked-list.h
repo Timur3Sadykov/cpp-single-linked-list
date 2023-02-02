@@ -5,6 +5,7 @@
 #include <utility>
 #include <iterator>
 #include <iostream>
+#include <cassert>
 
 template <typename Type>
 class SingleLinkedList {
@@ -93,6 +94,7 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] reference operator*() const noexcept {
+            assert(node_ != nullptr);
             return node_->value;
         }
 
@@ -100,6 +102,7 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] pointer operator->() const noexcept {
+            assert(node_ != nullptr);
             return &node_->value;
         }
 
@@ -233,12 +236,14 @@ public:
     //Возвращает итератор на вставленный элемент
     //Если при создании элемента будет выброшено исключение, список останется в прежнем состоянии
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        assert(pos.node_ != nullptr);
         pos.node_->next_node = new Node(value, pos.node_->next_node);
         ++size_;
         return Iterator{pos.node_->next_node};
     }
 
     void PopFront() noexcept {
+        assert(!IsEmpty());
         const auto& del = begin();
         head_.next_node = del.node_->next_node;
         delete del.node_;
@@ -248,6 +253,7 @@ public:
      //Удаляет элемент, следующий за pos.
      //Возвращает итератор на элемент, следующий за удалённым
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        assert(pos.node_ != nullptr);
         auto del = pos.node_->next_node;
         pos.node_->next_node = del->next_node;
         delete del;
